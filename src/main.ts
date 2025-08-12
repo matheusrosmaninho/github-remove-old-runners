@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import { wait } from './wait.js'
 import { GithubService } from './services/github.js'
 import { Paginate } from './helpers/paginate.js'
 import type { Runs } from './entities/runs.js'

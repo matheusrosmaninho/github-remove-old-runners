@@ -7,7 +7,8 @@
     "node": "20.19.4"
   },
   "scripts": {
-    "local-action": "npx @github/local-action . src/main.ts .env"
+    "local-action": "npx @github/local-action . src/main.ts .env",
+    "build": "tsc"
   },
   "keywords": [
     "github",
