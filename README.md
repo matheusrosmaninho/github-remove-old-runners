@@ -32,3 +32,14 @@ npm install
    - `repo` (para repositórios)
    - `admin:org` (para organizações)
 
+## Exemplo
+
+```
+- name: github-remove-old-runners
+  uses: matheusrosmaninho/github-remove-old-runners@1.0.0
+  with:
+   api_token: "${{ secrets.TOKEN }}"
+   repo_owner: "matheusrosmaninho"
+   repo_name: "github-remove-old-runners"
+   days_retention: 10
+```
