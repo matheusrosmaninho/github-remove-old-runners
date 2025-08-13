@@ -1,0 +1,40 @@
+{
+  "name": "github-remove-old-runners",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": "20.19.4"
+  },
+  "scripts": {
+    "local-action": "npx @github/local-action . src/main.ts .env",
+    "build": "tsc",
+    "package": "npx rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript"
+  },
+  "keywords": [
+    "github",
+    "actions",
+    "runners",
+    "cleanup"
+  ],
+  "author": "Matheus Rosmaninho <matheusrosmano@gmail.com>",
+  "license": "ISC",
+  "description": "Esse projeto tem o objetivo de remover runners antigos do GitHub Actions.",
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@github/local-action": "^5.1.0",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.4",
+    "@types/node": "^24.1.0",
+    "eslint": "^9.32.0",
+    "globals": "^16.3.0",
+    "jiti": "^2.5.1",
+    "rollup": "^4.46.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.0"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "octokit": "^5.0.3"
+  }
+}
