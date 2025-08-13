@@ -32975,7 +32975,6 @@ class GithubService {
 
 async function run() {
     try {
-        const ms = coreExports.getInput('milliseconds');
         const apiToken = coreExports.getInput('api_token');
         const repoOwner = coreExports.getInput('repo_owner');
         const repoName = coreExports.getInput('repo_name');
@@ -32995,7 +32994,7 @@ async function run() {
             }
             coreExports.info(`Página atual: ${currentPage} de ${totalPages}`);
             await Promise.all(runs.workflowRuns.map(async (run) => {
-                if (run.isCustomDateAfterCreatedAt(daysRetention)) {
+                if (run.isCustomDateAfterCreatedAt(daysRetention) && run.status !== WorkflowRun.STATUS_IN_PROGRESS) {
                     await githubService.deleteWorkflowRun(run.id);
                     coreExports.info(`Workflow run ${run.id} deleted.`);
                     deletedPages++;

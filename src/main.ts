@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import { GithubService } from './services/github.js'
 import { Paginate } from './helpers/paginate.js'
 import type { Runs } from './entities/runs.js'
+import { WorkflowRun } from './entities/workflowRun.js'
 
 /**
  * The main function for the action.
@@ -36,7 +37,7 @@ export async function run(): Promise<void> {
 
       await Promise.all(
         runs.workflowRuns.map(async (run) => {
-          if (run.isCustomDateAfterCreatedAt(daysRetention)) {
+          if (run.isCustomDateAfterCreatedAt(daysRetention) && run.status !== WorkflowRun.STATUS_IN_PROGRESS) {
             await githubService.deleteWorkflowRun(run.id);
             core.info(`Workflow run ${run.id} deleted.`);
             deletedPages++;
