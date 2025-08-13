@@ -10,7 +10,6 @@ import type { Runs } from './entities/runs.js'
  */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
     const apiToken: string = core.getInput('api_token')
     const repoOwner: string = core.getInput('repo_owner')
     const repoName: string = core.getInput('repo_name')

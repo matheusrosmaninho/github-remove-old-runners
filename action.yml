@@ -11,10 +11,13 @@ inputs:
   api_token:
     description: Your GitHub API token
     required: true
-  repository:
+  repo_owner:
+    description: The owner of the repository
+    required: true
+  repo_name:
     description: The repository from which to remove old runners
     required: true
-  days:
+  days_retention:
     description: The number of days to keep runners
     required: true
     default: '30'
