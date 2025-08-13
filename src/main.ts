@@ -38,7 +38,7 @@ export async function run(): Promise<void> {
       await Promise.all(
         runs.workflowRuns.map(async (run) => {
           if (run.isCustomDateAfterCreatedAt(daysRetention)) {
-            //await githubService.deleteWorkflowRun(run.id);
+            await githubService.deleteWorkflowRun(run.id);
             core.info(`Workflow run ${run.id} deleted.`);
             deletedPages++;
           }
@@ -51,7 +51,6 @@ export async function run(): Promise<void> {
     core.info(`Processamento concluído. Total de páginas processadas: ${currentPage - 1}`);
 
     // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
     core.setOutput('totalPages', totalPages)
     core.setOutput('deletedPages', deletedPages)
   } catch (error) {
