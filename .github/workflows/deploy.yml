@@ -1,0 +1,89 @@
+name: Cria tag e release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  cria_tag:
+    name: Cria tag de versão
+    runs-on: ubuntu-22.04
+    timeout-minutes: 2
+    outputs:
+      TAG_VERSION: ${{ steps.coleta_tag.outputs.TAG_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Coleta a tag que será criada
+        id: coleta_tag
+        run: |
+          TAG_VERSION="$(cat package.json | jq -r '.version')"
+          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Exibe a tag que será criada
+        run: echo "${{ steps.coleta_tag.outputs.TAG_VERSION }}"
+
+  verificar_tag_existente:
+    name: Verificar tag existente
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    needs:
+      - cria_tag
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verifica se a tag já existe
+        run: |
+          TAG="$(git tag | grep -F "${{ needs.cria_tag.outputs.TAG_VERSION }}" || true)"
+          if [ -z "$TAG" ]; then
+            exit 0
+          else
+            echo "A versão ${{ needs.cria_tag.outputs.TAG_VERSION }} já existe"
+            exit 1
+          fi
+
+  push_tag:
+    name: Push tag de versão
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    needs:
+      - cria_tag
+      - verificar_tag_existente
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CONTENT_TAGS_WRITE }}
+
+      - name: Add credentials git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Sobe para o github a tag criada
+        run: |
+          git tag ${{ needs.cria_tag.outputs.TAG_VERSION }}
+          git push origin ${{ needs.cria_tag.outputs.TAG_VERSION }}
+
+  release:
+    name: Cria release baseada na tag criada
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    needs:
+      - cria_tag
+      - push_tag
+    steps:
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ needs.cria_tag.outputs.TAG_VERSION }}
+        run: |
+          gh release create "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+              --generate-notes
