@@ -46,7 +46,7 @@ export async function run(): Promise<void> {
       );
 
       currentPage++;
-    } while (currentPage < totalPages);
+    } while (currentPage < (totalPages + 1));
 
     core.info(`Processamento concluído. Total de páginas processadas: ${currentPage - 1}`);
 
