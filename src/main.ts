@@ -18,7 +18,7 @@ export async function run(): Promise<void> {
     let runs: Runs | null = null
     const githubService = new GithubService(apiToken, repoOwner, repoName);
 
-    let currentPage = 1;
+    let currentPage = 0;
     let totalPages = 1;
     let deletedItems = 0;
 
@@ -32,7 +32,7 @@ export async function run(): Promise<void> {
         break;
       }
 
-      if (currentPage === 1) {
+      if (currentPage === 0) {
         const pagination = new Paginate(runs.total, 1);
         totalPages = pagination.totalPages;
         core.info(`Total de páginas: ${totalPages}`);
@@ -51,7 +51,7 @@ export async function run(): Promise<void> {
       );
 
       currentPage++;
-    } while (currentPage <= totalPages);
+    } while (currentPage < totalPages);
 
     core.info(`Processamento concluído. Total de páginas processadas: ${currentPage - 1}`);
 

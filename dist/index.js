@@ -32981,7 +32981,7 @@ async function run() {
         const daysRetention = parseInt(coreExports.getInput('days_retention'));
         let runs = null;
         const githubService = new GithubService(apiToken, repoOwner, repoName);
-        let currentPage = 1;
+        let currentPage = 0;
         let totalPages = 1;
         let deletedItems = 0;
         coreExports.info(`Fetching workflow runs for ${repoOwner}/${repoName}...`);
@@ -32991,7 +32991,7 @@ async function run() {
                 totalPages = 0;
                 break;
             }
-            if (currentPage === 1) {
+            if (currentPage === 0) {
                 const pagination = new Paginate(runs.total, 1);
                 totalPages = pagination.totalPages;
                 coreExports.info(`Total de páginas: ${totalPages}`);
@@ -33005,7 +33005,7 @@ async function run() {
                 }
             }));
             currentPage++;
-        } while (currentPage <= totalPages);
+        } while (currentPage < totalPages);
         coreExports.info(`Processamento concluído. Total de páginas processadas: ${currentPage - 1}`);
         coreExports.setOutput('totalPages', totalPages);
         coreExports.setOutput('deletedItems', deletedItems);
