@@ -32983,7 +32983,7 @@ async function run() {
         const githubService = new GithubService(apiToken, repoOwner, repoName);
         let currentPage = 1;
         let totalPages = 1;
-        let deletedPages = 0;
+        let deletedItems = 0;
         coreExports.info(`Fetching workflow runs for ${repoOwner}/${repoName}...`);
         do {
             runs = await githubService.getWorkflowRuns(currentPage);
@@ -32997,14 +32997,14 @@ async function run() {
                 if (run.isCustomDateAfterCreatedAt(daysRetention) && run.status !== WorkflowRun.STATUS_IN_PROGRESS) {
                     await githubService.deleteWorkflowRun(run.id);
                     coreExports.info(`Workflow run ${run.id} deleted.`);
-                    deletedPages++;
+                    deletedItems++;
                 }
             }));
             currentPage++;
-        } while (currentPage <= totalPages);
+        } while (currentPage < totalPages);
         coreExports.info(`Processamento concluído. Total de páginas processadas: ${currentPage - 1}`);
         coreExports.setOutput('totalPages', totalPages);
-        coreExports.setOutput('deletedPages', deletedPages);
+        coreExports.setOutput('deletedItems', deletedItems);
     }
     catch (error) {
         if (error instanceof Error)

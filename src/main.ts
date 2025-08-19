@@ -20,7 +20,7 @@ export async function run(): Promise<void> {
 
     let currentPage = 1;
     let totalPages = 1;
-    let deletedPages = 0;
+    let deletedItems = 0;
 
     core.info(`Fetching workflow runs for ${repoOwner}/${repoName}...`);
 
@@ -40,19 +40,19 @@ export async function run(): Promise<void> {
           if (run.isCustomDateAfterCreatedAt(daysRetention) && run.status !== WorkflowRun.STATUS_IN_PROGRESS) {
             await githubService.deleteWorkflowRun(run.id);
             core.info(`Workflow run ${run.id} deleted.`);
-            deletedPages++;
+            deletedItems++;
           }
         })
       );
 
       currentPage++;
-    } while (currentPage <= totalPages);
+    } while (currentPage < totalPages);
 
     core.info(`Processamento concluído. Total de páginas processadas: ${currentPage - 1}`);
 
     // Set outputs for other workflow steps to use
     core.setOutput('totalPages', totalPages)
-    core.setOutput('deletedPages', deletedPages)
+    core.setOutput('deletedItems', deletedItems)
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
