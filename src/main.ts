@@ -21,6 +21,7 @@ export async function run(): Promise<void> {
     let currentPage = 1;
     let totalPages = 1;
     let deletedItems = 0;
+    const itemsAlreadyDeleted: number[] = [];
 
     core.info(`Fetching workflow runs for ${repoOwner}/${repoName}...`);
 
@@ -39,18 +40,22 @@ export async function run(): Promise<void> {
 
       core.info(`Página atual: ${currentPage} de ${totalPages}`);
 
-      await Promise.all(
-        runs.workflowRuns.map(async (run) => {
-          if (run.isCustomDateAfterCreatedAt(daysRetention) && run.status !== WorkflowRun.STATUS_IN_PROGRESS) {
-            await githubService.deleteWorkflowRun(run.id);
-            core.info(`Workflow run ${run.id} deleted.`);
-            deletedItems++;
-          }
-        })
-      );
+      runs.workflowRuns.map(async (run) => {
+        if (run.isCustomDateAfterCreatedAt(daysRetention) && run.status !== WorkflowRun.STATUS_IN_PROGRESS) {
+          itemsAlreadyDeleted.push(run.id);
+        }
+      });
 
       currentPage++;
     } while (currentPage <= totalPages);
+
+    await Promise.all(
+        itemsAlreadyDeleted.map(async (runId) => {
+            await githubService.deleteWorkflowRun(runId);
+            core.info(`Workflow run ${runId} deleted.`);
+            deletedItems++;
+        })
+      );
 
     // Set outputs for other workflow steps to use
     core.setOutput('totalPages', totalPages)
