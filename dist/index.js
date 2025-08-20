@@ -32984,6 +32984,7 @@ async function run() {
         let currentPage = 1;
         let totalPages = 1;
         let deletedItems = 0;
+        const itemsAlreadyDeleted = [];
         coreExports.info(`Fetching workflow runs for ${repoOwner}/${repoName}...`);
         do {
             runs = await githubService.getWorkflowRuns(currentPage);
@@ -32996,15 +32997,18 @@ async function run() {
                 totalPages = pagination.totalPages;
             }
             coreExports.info(`Página atual: ${currentPage} de ${totalPages}`);
-            await Promise.all(runs.workflowRuns.map(async (run) => {
+            runs.workflowRuns.map(async (run) => {
                 if (run.isCustomDateAfterCreatedAt(daysRetention) && run.status !== WorkflowRun.STATUS_IN_PROGRESS) {
-                    await githubService.deleteWorkflowRun(run.id);
-                    coreExports.info(`Workflow run ${run.id} deleted.`);
-                    deletedItems++;
+                    itemsAlreadyDeleted.push(run.id);
                 }
-            }));
+            });
             currentPage++;
         } while (currentPage <= totalPages);
+        await Promise.all(itemsAlreadyDeleted.map(async (runId) => {
+            await githubService.deleteWorkflowRun(runId);
+            coreExports.info(`Workflow run ${runId} deleted.`);
+            deletedItems++;
+        }));
         coreExports.setOutput('totalPages', totalPages);
         coreExports.setOutput('deletedItems', deletedItems);
     }
