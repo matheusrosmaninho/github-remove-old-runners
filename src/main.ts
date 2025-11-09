@@ -52,8 +52,8 @@ export async function run(): Promise<void> {
     await Promise.all(
         itemsAlreadyDeleted.map(async (runId) => {
             await githubService.deleteWorkflowRun(runId);
-            core.info(`Workflow run ${runId} deleted.`);
             deletedItems++;
+            core.info(`Item ${deletedItems} of ${itemsAlreadyDeleted.length} deleted.`);
         })
       );
 

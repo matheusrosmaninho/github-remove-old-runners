@@ -33006,8 +33006,8 @@ async function run() {
         } while (currentPage <= totalPages);
         await Promise.all(itemsAlreadyDeleted.map(async (runId) => {
             await githubService.deleteWorkflowRun(runId);
-            coreExports.info(`Workflow run ${runId} deleted.`);
             deletedItems++;
+            coreExports.info(`Item ${deletedItems} of ${itemsAlreadyDeleted.length} deleted.`);
         }));
         coreExports.setOutput('totalPages', totalPages);
         coreExports.setOutput('deletedItems', deletedItems);
